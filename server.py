@@ -31,7 +31,7 @@ while serveur_lance:
         for client in clients_connectes:
             x = randrange(0,800)
             y = randrange(0,800)
-            coo = "!" + str(x) + "," + str(y)
+            coo = "!" + "PE " + "nom_obj " + "blit " + str(x) + "," + str(y) + "."
             coo = coo.encode()
             client.send(coo)
 
