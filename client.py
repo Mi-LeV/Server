@@ -1,6 +1,7 @@
 import socket
 import pygame
 import cl_client as cl
+import variables as var
 
 hote = 'localhost'
 port = 8001
@@ -27,10 +28,9 @@ notation objet :
     
 ex : "!PE nom_obj blit x,y"
 """
-objectList = []
 
 while True:
-    blitList = []
+    var.blitList = []
     msg_rec = connexion_avec_serveur.recv(1024)
     msg_rec = msg_rec.decode()
     list_msg = msg_rec.split("!")
@@ -47,15 +47,15 @@ while True:
             found = False
             coo = options.split(",")
             coo = tuple(map(int,coo))
-            for objet in objectList:
+            for objet in var.objectList:
                 if objet.name == name_object:
                     found = True
-                    blitList.append(objet)
+                    var.blitList.append(objet)
                     objet.move(coo)
             if not found:
                 x = cl.PE(name_object,coo)
-                objectList.append(x)
-                blitList.append(x)
+                var.objectList.append(x)
+                var.blitList.append(x)
         
         fenetre.blit(image_fond,(0,0))
         for objet in blitList:
@@ -77,19 +77,26 @@ while True:
                     found = False
                     coo = options.split(",")
                     coo = tuple(map(int,coo))
-                    for objet in objectList:
+                    for objet in var.objectList:
                         if objet.name == name_object:
                             found = True
-                            blitList.append(objet)
+                            var.blitList.append(objet)
                             objet.move(coo)
                     if not found:
                         x = cl.PE(name_object,coo)
-                        objectList.append(x)
-                        blitList.append(x)
-                
+                        var.objectList.append(x)
+                        var.blitList.append(x)
+
+                if action == "delete":
+                    for objet in var.objectList:
+                        if objet.name == name_object:
+                            objet.delete()
+
+
                 fenetre.blit(image_fond,(0,0))
-                for objet in blitList:
+                for objet in var.blitList:
                     fenetre.blit(objet.image,objet.rect)
+                
                 
                 pygame.display.flip()
         except:pass
