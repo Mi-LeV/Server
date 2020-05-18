@@ -1,0 +1,2 @@
+objectList = []
+blitList = []
