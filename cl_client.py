@@ -1,4 +1,6 @@
 import pygame
+import variables as var
+
 class PE:
     def __init__(self,name,coo):
         self.name = name
@@ -11,4 +13,11 @@ class PE:
     def move(self,coo):
         self.rect[0] = coo[0]
         self.rect[1] = coo[1]
+
+    def delete(self):
+        if self in var.objectList:
+            var.objectList.remove(self)
+        if self in var.blitList:
+            var.blitList.remove(self)
+        del self
 
