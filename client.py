@@ -10,13 +10,11 @@ connexion_avec_serveur.connect((hote, port)) #Permet d'attendre des connexions d
 print("Connecte")
 pygame.init()
 fenetre = pygame.display.set_mode((800, 800))
-image = pygame.image.load('img_sprite_plane_red_player.png').convert_alpha()
-image_fond = pygame.image.load('img_fond.png').convert_alpha()
-rect = image.get_rect()
+image_fond = pygame.image.load('images/img_fond.png').convert_alpha()
 """
 Les messages recus sont tjrs de cette forme:
 ! + espace + objet + nom_objet +espace + action + espace + x,y ou x
-notation objet :
+type objet :
     2 lettres en maj
     1e lettre: type d'objet player,ia,icone...
         P:player
@@ -25,8 +23,20 @@ notation objet :
         I:Icone
     2e lettre: friendly ou ennemy:
         F ou E
-    
-ex : "!PE nom_obj blit x,y"
+
+nom de l'objet:
+    un nom unique, propre à l'objet en question
+
+action:
+    chose que l'on veut faire avec cet objet: blit, delete
+
+options:
+    champ optionnel, utilisé par blit pour les coordonnées et l'angle,etc...
+
+les champs du message non utilisés NE DOIVENT PAS ETRE VIDES, ils sont remplacés par des ?
+
+ex : "!PE nom_obj blit x,y,angle"
+ex : "!? nom_obj delete ?"
 """
 
 while True:
@@ -34,73 +44,50 @@ while True:
     msg_rec = connexion_avec_serveur.recv(1024)
     msg_rec = msg_rec.decode()
     list_msg = msg_rec.split("!")
-    msg = list_msg[-1]
-    if "." in msg:
-        list_command = msg[:-1].split("!")
-        command = list_command[-1].split(" ")
-        type_objet = command[0]
-        name_object = command[1]
-        action = command[2]
-        options = command[3]
+    for msg in list_msg:
 
-        if action == "blit":
-            found = False
-            coo = options.split(",")
-            coo = tuple(map(int,coo))
-            for objet in var.objectList:
-                if objet.name == name_object:
-                    found = True
-                    var.blitList.append(objet)
-                    objet.move(coo)
-            if not found:
-                x = cl.PE(name_object,coo)
-                var.objectList.append(x)
-                var.blitList.append(x)
+        if "." in msg:#si le message est entier
+
+            list_command = msg[:-1].split("!")
+            command = list_command[-1].split(" ")
+            type_objet = command[0]
+            name_object = command[1]
+            action = command[2]
+            options = command[3]
+
+            if action == "blit":
+                found = False
+                coo = options.split(",")
+                x,y = tuple(map(int,coo[:2]))#on fait un tuple avec x,y
+                for objet in var.objectList:
+                    if objet.name == name_object:
+                        found = True
+                        var.blitList.append(objet)
+                        objet.move((x,y))
+                        objet.turn(float(coo[2]))
+                if not found:
+                    if type_objet == 'PE':
+                        new_obj = cl.PE(name_object,(x,y))
+                    elif type_objet == 'PF':
+                        new_obj = cl.PF(name_object,(x,y))
+                    elif type_objet == 'IE':
+                        new_obj = cl.IE(name_object,(x,y))
+                    elif type_objet == 'IF':
+                        new_obj = cl.IF(name_object,(x,y))
+                    var.objectList.append(new_obj)
+                    var.blitList.append(new_obj)
+            
+            if action == "delete":
+                for objet in var.objectList:
+                    if objet.name == name_object:
+                        objet.delete()
         
         fenetre.blit(image_fond,(0,0))
-        for objet in blitList:
+
+        for objet in var.blitList:
             fenetre.blit(objet.image,objet.rect)
         
         pygame.display.flip()
-    else:
-        try:
-            msg = list_msg[-2]
-            if "." in msg:
-                list_command = msg[:-1].split("!")
-                command = list_command[-1].split(" ")
-                type_objet = command[0]
-                name_object = command[1]
-                action = command[2]
-                options = command[3]
-
-                if action == "blit":
-                    found = False
-                    coo = options.split(",")
-                    coo = tuple(map(int,coo))
-                    for objet in var.objectList:
-                        if objet.name == name_object:
-                            found = True
-                            var.blitList.append(objet)
-                            objet.move(coo)
-                    if not found:
-                        x = cl.PE(name_object,coo)
-                        var.objectList.append(x)
-                        var.blitList.append(x)
-
-                if action == "delete":
-                    for objet in var.objectList:
-                        if objet.name == name_object:
-                            objet.delete()
-
-
-                fenetre.blit(image_fond,(0,0))
-                for objet in var.blitList:
-                    fenetre.blit(objet.image,objet.rect)
-                
-                
-                pygame.display.flip()
-        except:pass
-
 
 
 

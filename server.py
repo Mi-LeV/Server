@@ -31,9 +31,14 @@ while serveur_lance:
         for client in clients_connectes:
             x = randrange(0,800)
             y = randrange(0,800)
-            coo = "!" + "PE " + "nom_obj " + "blit " + str(x) + "," + str(y) + "."
-            coo = coo.encode()
-            client.send(coo)
+            msg = "!" + "PE " + "nom_obj " + "blit " + str(x) + "," + str(y) +","+ str(x%300)+ "."
+            msg = msg.encode()
+            client.send(msg)
+            x = randrange(0,800)
+            y = randrange(0,800)
+            msg = "!" + "PF " + "nom_obj1 " + "blit " + str(x) + "," + str(y) +","+ str(x%300)+ "."
+            msg = msg.encode()
+            client.send(msg)
 
 
 print("disconnected")
