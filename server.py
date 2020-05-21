@@ -51,6 +51,8 @@ while serveur_lance:
 
                     if action == "close":
                         client.close()
+                        noms_clients.pop(client)
+                        clients_connectes.remove(client)
 
                     if action == "respawn":
                         pass
