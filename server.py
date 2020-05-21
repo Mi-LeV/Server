@@ -1,5 +1,6 @@
 import socket 
 import select
+import serv_var as var
 from random import randrange
 import serv_classes as cl
 
@@ -26,6 +27,8 @@ while serveur_lance:
         msg = "!" + "? " + noms_clients[connexion_avec_client]+ " " + "rename " + "?" + "."
         connexion_avec_client.send(msg.encode())
         nb_nom += 1
+        noms_clients[connexion_avec_client] = cl.PlayerPlane(0,0,True)
+        
     
     clients_a_lire = []
     try:
