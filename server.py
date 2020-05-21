@@ -1,6 +1,7 @@
 import socket 
 import select
 from random import randrange
+import serv_classes as cl
 
 
 hote = ''
@@ -12,6 +13,8 @@ connexion_principale.listen(5)
 
 serveur_lance = True
 clients_connectes = []
+noms_clients = {}
+nb_nom = 0
 
 while serveur_lance:
     connexion_demandees, wlist, xlist = select.select([connexion_principale], [], [], 0.05) #select renvoie la liste des clients qui ont un message à réceptionner
@@ -19,6 +22,10 @@ while serveur_lance:
     for connexion in connexion_demandees:
         connexion_avec_client, infos_connexion = connexion_principale.accept()
         clients_connectes.append(connexion_avec_client)
+        noms_clients[connexion_avec_client] = "player{}".format(nb_nom)
+        msg = "!" + "? " + noms_clients[connexion_avec_client]+ " " + "rename " + "?" + "."
+        connexion_avec_client.send(msg.encode())
+        nb_nom += 1
     
     clients_a_lire = []
     try:
@@ -27,7 +34,29 @@ while serveur_lance:
         pass
     else:
         for client in clients_a_lire:
-            pass
+            msg_rec = client.recv(1024)
+            msg_rec = msg_rec.decode()
+            list_msg = msg_rec.split("!")
+            for msg in list_msg:
+                if "." in msg:
+                    list_command = msg[:-1].split("!")
+                    command = list_command[-1].split(" ")
+                    type_objet = command[0]
+                    name_object = command[1]
+                    action = command[2]
+                    options = command[3]
+
+                    if action == "close":
+                        client.close()
+
+                    if action == "respawn":
+                        pass
+
+                    if action == "shoot":
+                        pass
+
+
+
         for client in clients_connectes:
             x = randrange(0,800)
             y = randrange(0,800)

@@ -1,7 +1,8 @@
 import socket
 import pygame
-import cl_client as cl
-import variables as var
+from pygame.locals import *
+import cl_classes as cl
+import cl_var as var
 
 hote = 'localhost'
 port = 8001
@@ -11,6 +12,7 @@ print("Connecte")
 pygame.init()
 fenetre = pygame.display.set_mode((800, 800))
 image_fond = pygame.image.load('images/img_fond.png').convert_alpha()
+loop = True
 """
 Les messages recus sont tjrs de cette forme:
 ! + espace + objet + nom_objet +espace + action + espace + x,y ou x
@@ -39,12 +41,22 @@ ex : "!PE nom_obj blit x,y,angle"
 ex : "!? nom_obj delete ?"
 """
 
-while True:
+while loop:
+    for event in cl.pygame.event.get():    #On parcours la liste de tous les événements reçus
+            if event.type == MOUSEBUTTONDOWN and event.button == 1:##clic gauche
+                msg = "!" + "? " + "? " + "shoot " + "?" + "."
+                msg = msg.encode()
+                connexion_avec_serveur.send(msg)
+            if event.type == KEYDOWN and event.key == K_SPACE:#on crée un nouv player et on le met dans playerlist
+                msg = "!" + "? " + "? " + "respawn " + "?" + "."
+                msg = msg.encode()
+                connexion_avec_serveur.send(msg)
+            
     var.blitList = []
     msg_rec = connexion_avec_serveur.recv(1024)
     msg_rec = msg_rec.decode()
     list_msg = msg_rec.split("!")
-    for msg in list_msg:
+    for msg in list_msg[1:]:
 
         if "." in msg:#si le message est entier
 
@@ -81,6 +93,9 @@ while True:
                 for objet in var.objectList:
                     if objet.name == name_object:
                         objet.delete()
+            
+            if action == "rename":
+                client_name = name_object
         
         fenetre.blit(image_fond,(0,0))
 
@@ -88,6 +103,12 @@ while True:
             fenetre.blit(objet.image,objet.rect)
         
         pygame.display.flip()
+
+        if event.type == QUIT or (event.type==KEYDOWN and event.key == K_ESCAPE):#si on appuie sur la croix de la fenetre 
+                msg = "!" + "? " + "? " + "close " + "?" + "."
+                msg = msg.encode()
+                connexion_avec_serveur.send(msg)
+                loop = False
 
 
 

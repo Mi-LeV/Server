@@ -1,5 +1,5 @@
 import pygame
-import variables as var
+import cl_var as var
 
 class Thing:
     def __init__(self,name,coo):
