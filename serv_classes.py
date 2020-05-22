@@ -43,11 +43,27 @@ class utility:
     @staticmethod
     def spawnGroup(x,y,friendly,number):
         for i in range(number):
-            IaPlane(x+randrange(-100,100,30),y+randrange(-100,100,30),friendly)
+            IaPlane(x+randrange(-100,100,30),y+randrange(-100,100,30),friendly,"ia"+str(var.nom_iterator))
+            var.nom_iterator += 1
+    
+    @staticmethod
+    def getObjType(obj):
+        if type(obj) == PlayerPlane:
+            classe = "P"
+        elif type(obj) == IaPlane:
+            classe = "I"
+        elif type(obj) == Missile:
+            classe = "M"
+        if obj.friendly == True:
+            return classe + "F"
+        elif obj.friendly == False:
+            return classe + "E"
+        else:
+            return classe + "N"
 
 
 class Plane:
-    def __init__(self,x,y,angle = 90,timeAlive = 0):
+    def __init__(self,x,y,name,angle = 90,timeAlive = 0):
         self.MAXSPEED = 3
         self.timeAlive = timeAlive
         self.xVector=0
@@ -56,6 +72,7 @@ class Plane:
         self.yDest = y
         self.x = x
         self.y = y
+        self.name = name
         self.angle = angle
         self.missileList = []
         var.refreshList.append(self)
@@ -118,20 +135,23 @@ class Plane:
             self.yVector = 0
             return True
 
+    def turn(self):
+        self.angle = (utility.getBearing((self.x,self.y),(self.xDest,self.yDest))+90)%360
+    
     def shoot(self):
-        self.missileList.append(Missile(0,0,0,0,self))
+        self.missileList.append(Missile(0,0,"mis{}".format(var.nom_iterator),0,0,self))
     
 
 class PlayerPlane(Plane):
-    def __init__(self,x,y,friend,angle = 90,timeAlive = 0):
-        super().__init__(x,y,angle,timeAlive)
+    def __init__(self,x,y,friend,name,angle = 90,timeAlive = 0):
+        super().__init__(x,y,name,angle,timeAlive)
         self.MAXMISSILE = 3
         var.playerList.append(self)
         
         self.friendly = friend
         self.notifList = []
         self.notifOutList =[]
-        self.mouse = (0,0)
+        self.mouse = (400,400)
     
     def shoot(self):
         if len(self.missileList) < self.MAXMISSILE:
@@ -157,7 +177,7 @@ class PlayerPlane(Plane):
         self.y += self.yVector
 
     def vectorToX(self,vector,mouse):
-        distanceToDest = mouse - var.SCREEN_LENGHT/2
+        distanceToDest = mouse - 400
         if (vector + distanceToDest)*abs((distanceToDest/1.5)) > 0:
             vector = utility.plafonne((vector + distanceToDest)*abs((distanceToDest/1.5)),self.MAXSPEED,True)
         else:
@@ -165,7 +185,7 @@ class PlayerPlane(Plane):
         return vector
     
     def vectorToY(self,vector,mouse):
-        distanceToDest = mouse - var.SCREEN_HEIGHT/2
+        distanceToDest = mouse - 400
         if (vector + distanceToDest)*abs((distanceToDest/1.5)) > 0:
             vector = utility.plafonne((vector + distanceToDest)*abs((distanceToDest/1.5)),self.MAXSPEED,True)
         else:
@@ -174,8 +194,8 @@ class PlayerPlane(Plane):
     
 
 class IaPlane(Plane):
-    def __init__(self,x,y,friend,active = True,angle = 90,timeAlive = 0):
-        super().__init__(x,y,angle,timeAlive)
+    def __init__(self,x,y,friend,name,active = True,angle = 90,timeAlive = 0):
+        super().__init__(x,y,name,angle,timeAlive)
         self.MAXSPEED = 1.5
         self.RELOADTIME = 30
         self.MAXMISSILE = 3
@@ -246,7 +266,7 @@ class IaPlane(Plane):
             return False
 
 class Missile():
-    def __init__(self,x, y , angle ,timeAlive,creator = None):
+    def __init__(self,x, y , name , angle ,timeAlive,creator = None):
 
         self.creator = creator
         if self.creator: #si il a un créateur
@@ -274,6 +294,7 @@ class Missile():
         self.y = y
         self.speed = 0
         self.timeAlive = timeAlive
+        self.name = name
         self.angle = angle#l'angle natif de l'image
         var.refreshList.append(self)
     
@@ -298,7 +319,9 @@ class Missile():
             self.yVector = 0
             self.delete()
     
-    
+    def turn(self):
+        return
+
     def delete(self):
         if self.creator:
             if self in self.creator.missileList:
