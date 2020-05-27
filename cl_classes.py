@@ -61,3 +61,11 @@ class IF(Thing):
         self.orig_image = pygame.image.load(self.image_name).convert_alpha()
         self.image = self.orig_image
         self.rect = self.image.get_rect()
+
+class MN(Thing):
+    def __init__(self,name,coo):
+        super().__init__(name,coo)
+        self.image_name = "images/img_sprite_missile.png"
+        self.orig_image = pygame.image.load(self.image_name).convert_alpha()
+        self.image = self.orig_image
+        self.rect = self.image.get_rect()

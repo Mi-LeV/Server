@@ -49,6 +49,13 @@ while serveur_lance:
                     action = command[2]
                     options = command[3]
 
+                    if action == "mou":
+                        for playerplane in var.refreshList:
+                            if playerplane.name == noms_clients[client]:
+                                options = options.split(",")
+                                playerplane.mouseX = int(options[0])
+                                playerplane.mouseY = int(options[1])
+                    
                     if action == "clo":
                         client.close()
                         noms_clients.pop(client)
@@ -61,7 +68,9 @@ while serveur_lance:
                         pass
 
                     if action == "sho":
-                        pass
+                        for playerplane in var.refreshList:
+                            if playerplane.name == noms_clients[client]:
+                                playerplane.shoot()
     
     for objet in var.refreshList:
         objet.turn()

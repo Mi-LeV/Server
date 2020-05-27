@@ -61,6 +61,8 @@ while loop:
                 msg = "!" + "IF " + "? " + "spa " + "5" + "."
                 msg = msg.encode()
                 connexion_avec_serveur.send(msg)
+    msg = "!" + "? " + "? " + "mou " + str(pygame.mouse.get_pos()[0]) + "," + str(pygame.mouse.get_pos()[1]) + "."
+    connexion_avec_serveur.send(msg.encode())
             
     var.blitList = []
     msg_rec = connexion_avec_serveur.recv(2600)
@@ -96,6 +98,8 @@ while loop:
                         new_obj = cl.IE(name_object,(x,y))
                     elif type_objet == 'IF':
                         new_obj = cl.IF(name_object,(x,y))
+                    elif type_objet == 'MN':
+                        new_obj = cl.MN(name_object,(x,y))
                     var.objectList.append(new_obj)
                     var.blitList.append(new_obj)
             

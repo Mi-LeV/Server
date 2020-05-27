@@ -151,7 +151,8 @@ class PlayerPlane(Plane):
         self.friendly = friend
         self.notifList = []
         self.notifOutList =[]
-        self.mouse = (400,400)
+        self.mouseX = 400
+        self.mouseY = 400
     
     def shoot(self):
         if len(self.missileList) < self.MAXMISSILE:
@@ -159,7 +160,8 @@ class PlayerPlane(Plane):
 
     def tick(self):
         if self.testOutOfMap() and (not self.notifList):
-            NotifOut('Hors des limites de la map, mort dans ',60,self)
+            #NotifOut('Hors des limites de la map, mort dans ',60,self)
+            pass
         if (not self.testOutOfMap()) and self.notifList:
             for notif in self.notifOutList:
                 notif.delete()
@@ -170,8 +172,8 @@ class PlayerPlane(Plane):
         self.goTo()
     
     def goTo(self):
-        self.xVector = self.vectorToX(self.xVector,self.mouse[0])
-        self.yVector = self.vectorToY(self.yVector,self.mouse[1])
+        self.xVector = self.vectorToX(self.xVector,self.mouseX)
+        self.yVector = self.vectorToY(self.yVector,self.mouseY)
         
         self.x += self.xVector
         self.y += self.yVector
