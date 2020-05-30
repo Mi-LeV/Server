@@ -1,1 +1,1 @@
-# Server : version expérimantale du projet AWACS
+# Server : version expérimentale du projet AWACS
